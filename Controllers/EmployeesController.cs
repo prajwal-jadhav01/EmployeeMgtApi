@@ -18,7 +18,7 @@ namespace EmployeeMgtApi.Controllers
             _dbContext = dbContext;
         }
 
-        // GET Request: To Fetch all employees
+        // GET Req : To Fetch all employees
         [HttpGet]
         public IActionResult GetAllEmployees()
         {
@@ -26,10 +26,9 @@ namespace EmployeeMgtApi.Controllers
 
             try
             {
-                // Fetch all active employees from the database
-                var allEmployees = _dbContext.Employees.Where(e => e.Status == "ACTV").ToList();
+                var allEmployees = _dbContext.Employees.Where(e => e.Status == EmployeeStatus.Active).ToList();
 
-                // Check if there are any employees
+                // Ensure you are getting all employees
                 if (allEmployees == null || allEmployees.Count == 0)
                 {
                     response = new ApiResponse<List<Employee>>(404, Constants.Messages.EmployeeNotFound, null);
@@ -44,15 +43,13 @@ namespace EmployeeMgtApi.Controllers
                 // Log the exception for debugging purposes
                 Console.WriteLine(ex.Message);
 
-                // Return a response with an internal server error status
                 response = new ApiResponse<List<Employee>>(500, Constants.Messages.InternalServerError, null);
             }
 
-            // Return the response with the status and data
             return Ok(response);
         }
 
-        // GET Request: To Fetch employee by id
+        // GET Req : To Fetch employee by id
         [HttpGet("{id:int}")]
         public IActionResult GetEmployeeById(int id)
         {
@@ -60,8 +57,7 @@ namespace EmployeeMgtApi.Controllers
 
             try
             {
-                // Fetch the employee by id from the database if they are active
-                var employee = _dbContext.Employees.FirstOrDefault(e => e.Id == id && e.Status == "ACTV");
+                var employee = _dbContext.Employees.FirstOrDefault(e => e.Id == id && e.Status == EmployeeStatus.Active);
                 if (employee == null)
                 {
                     response = new ApiResponse<object>(404, Constants.Messages.EmployeeNotFound, null);
@@ -73,21 +69,18 @@ namespace EmployeeMgtApi.Controllers
             }
             catch (Exception)
             {
-                // Return a response with an internal server error status
                 response = new ApiResponse<object>(500, Constants.Messages.InternalServerError, null);
             }
 
-            // Return the response with the status and data
             return Ok(response);
         }
 
-        // POST Request: To Add a new Employee
+        // POST Req: To Add the Employee
         [HttpPost]
         public IActionResult AddEmployee(AddEmployeeDto addEmployeeDto)
         {
             ApiResponse<object> response;
 
-            // Validate the input data
             if (string.IsNullOrWhiteSpace(addEmployeeDto.Name) ||
                 string.IsNullOrWhiteSpace(addEmployeeDto.Department) ||
                 string.IsNullOrWhiteSpace(addEmployeeDto.Position))
@@ -98,17 +91,15 @@ namespace EmployeeMgtApi.Controllers
 
             try
             {
-                // Create a new employee entity and set its properties
                 var employeeEntity = new Employee
                 {
                     Name = addEmployeeDto.Name,
                     Department = addEmployeeDto.Department,
                     Position = addEmployeeDto.Position,
-                    Status = "ACTV",
+                    Status = EmployeeStatus.Active,
                     StatusChangeDate = DateTime.UtcNow
                 };
 
-                // Add the new employee to the database and save changes
                 _dbContext.Employees.Add(employeeEntity);
                 _dbContext.SaveChanges();
 
@@ -116,21 +107,18 @@ namespace EmployeeMgtApi.Controllers
             }
             catch (Exception)
             {
-                // Return a response with an internal server error status
                 response = new ApiResponse<object>(500, Constants.Messages.InternalServerError, null);
             }
 
-            // Return the response with the status and data
             return Ok(response);
         }
 
-        // PUT Request: To Update an Employee data by id
+        // PUT Req : To Update an Employee data by id
         [HttpPut("{id:int}")]
         public IActionResult UpdateEmployee(int id, UpdateEmployeeDto updateEmployeeDto)
         {
             ApiResponse<object> response;
 
-            // Validate the input data
             if (string.IsNullOrWhiteSpace(updateEmployeeDto.Name) ||
                 string.IsNullOrWhiteSpace(updateEmployeeDto.Department) ||
                 string.IsNullOrWhiteSpace(updateEmployeeDto.Position))
@@ -141,36 +129,31 @@ namespace EmployeeMgtApi.Controllers
 
             try
             {
-                // Fetch the employee by id from the database if they are active
-                var employee = _dbContext.Employees.FirstOrDefault(e => e.Id == id && e.Status == "ACTV");
+                var employee = _dbContext.Employees.FirstOrDefault(e => e.Id == id && e.Status == EmployeeStatus.Active);
                 if (employee == null)
                 {
                     response = new ApiResponse<object>(404, Constants.Messages.EmployeeNotFound, null);
                 }
                 else
                 {
-                    // Update the employee's properties
                     employee.Name = updateEmployeeDto.Name;
                     employee.Department = updateEmployeeDto.Department;
                     employee.Position = updateEmployeeDto.Position;
                     employee.StatusChangeDate = DateTime.UtcNow;
 
-                    // Save the changes to the database
                     _dbContext.SaveChanges();
                     response = new ApiResponse<object>(200, Constants.Messages.EmployeeUpdated, employee);
                 }
             }
             catch (Exception)
             {
-                // Return a response with an internal server error status
                 response = new ApiResponse<object>(500, Constants.Messages.InternalServerError, null);
             }
 
-            // Return the response with the status and data
             return Ok(response);
         }
 
-        // DELETE Request: To soft delete the employee data
+        // DELETE Req : to soft delete the employee data
         [HttpDelete("{id:int}")]
         public IActionResult RemoveEmployee(int id)
         {
@@ -178,30 +161,25 @@ namespace EmployeeMgtApi.Controllers
 
             try
             {
-                // Fetch the employee by id from the database if they are active
-                var employee = _dbContext.Employees.FirstOrDefault(e => e.Id == id && e.Status == "ACTV");
+                var employee = _dbContext.Employees.FirstOrDefault(e => e.Id == id && e.Status == EmployeeStatus.Active);
                 if (employee == null)
                 {
                     response = new ApiResponse<object>(404, Constants.Messages.EmployeeNotFound, null);
                 }
                 else
                 {
-                    // Soft delete the employee by setting the status to inactive
-                    employee.Status = "INAC";
+                    employee.Status = EmployeeStatus.Inactive;
                     employee.StatusChangeDate = DateTime.UtcNow;
 
-                    // Save the changes to the database
                     _dbContext.SaveChanges();
-                    response = new ApiResponse<object>(200, Constants.Messages.EmployeeInactive, null);
+                    response = new ApiResponse<object>(200, Constants.Messages.EmployeeDeleted, null);
                 }
             }
             catch (Exception)
             {
-                // Return a response with an internal server error status
                 response = new ApiResponse<object>(500, Constants.Messages.InternalServerError, null);
             }
 
-            // Return the response with the status and data
             return Ok(response);
         }
     }

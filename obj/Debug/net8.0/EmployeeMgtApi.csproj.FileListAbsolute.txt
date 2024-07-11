@@ -103,3 +103,4 @@ C:\Users\admin\source\repos\EmployeeMgtApi\EmployeeMgtApi\obj\Debug\net8.0\refin
 C:\Users\admin\source\repos\EmployeeMgtApi\EmployeeMgtApi\obj\Debug\net8.0\EmployeeMgtApi.pdb
 C:\Users\admin\source\repos\EmployeeMgtApi\EmployeeMgtApi\obj\Debug\net8.0\EmployeeMgtApi.genruntimeconfig.cache
 C:\Users\admin\source\repos\EmployeeMgtApi\EmployeeMgtApi\obj\Debug\net8.0\ref\EmployeeMgtApi.dll
+C:\Users\admin\source\repos\EmployeeMgtApi\EmployeeMgtApi\obj\Debug\net8.0\EmployeeMgtApi.sourcelink.json
